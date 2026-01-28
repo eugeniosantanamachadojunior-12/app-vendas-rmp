@@ -1,24 +1,15 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const clientesController = require("../controllers/clientesController");
 
-const clientesController = require('../controllers/clientesController');
+// ⚠️ ROTAS ESPECIAIS PRIMEIRO
+router.get("/:id/historico", clientesController.historicoCompras);
 
-console.log('📦 clientesRoutes.js carregado');
-
-// CREATE – criar cliente
-router.post('/', clientesController.criarCliente);
-
-// READ – listar todos os clientes
-router.get('/', clientesController.listarClientes);
-
-// READ – buscar cliente por ID
-router.get('/:id', clientesController.buscarClientePorId);
-
-// UPDATE – atualizar cliente
-router.put('/:id', clientesController.atualizarCliente);
-
-// DELETE – excluir cliente
-router.delete('/:id', clientesController.deletarCliente);
-
+// CRUD normal
+router.get("/", clientesController.listar);
+router.post("/", clientesController.criarCliente);
+router.get("/:id", clientesController.buscarClientePorId);
+router.put("/:id", clientesController.atualizarCliente);
+router.delete("/:id", clientesController.deletarCliente);
 
 module.exports = router;
