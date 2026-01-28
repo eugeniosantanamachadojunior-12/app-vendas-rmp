@@ -1,8 +1,10 @@
+require("dotenv").config();
 // conexão com o banco
 require("./src/config/db");
 
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
@@ -19,27 +21,38 @@ const relatoriosRoutes = require("./src/routes/relatoriosRoutes");
 const dashboardRoutes = require("./src/routes/dashboardRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 
-console.log("🚀 Registrando rotas");
+// ============================
+// MONTAR ROTAS DA API
+// ============================
+app.use("/api/clientes", clientesRoutes);
+app.use("/api/produtos", produtosRoutes);
+app.use("/api/pedidos", pedidosRoutes);
+app.use("/api/relatorios", relatoriosRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/auth", authRoutes);
 
 // ============================
-// MONTAR ROTAS NO EXPRESS
+// SERVIR FRONTEND (VITE BUILD)
 // ============================
-app.use("/clientes", clientesRoutes);
-app.use("/produtos", produtosRoutes);
-app.use("/pedidos", pedidosRoutes);
-app.use("/relatorios", relatoriosRoutes);
-app.use("/dashboard", dashboardRoutes);
-app.use("/auth", authRoutes);
+app.use(express.static(path.join(__dirname, "frontend", "dist")));
 
-// rota raiz
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("API de vendas funcionando!");
 });
 
 // ============================
-// INICIAR SERVIDOR (SEMPRE POR ÚLTIMO)
+// ROTA CORINGA DO REACT
 // ============================
-const PORT = 3000;
+app.get(/.*/, (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "frontend", "dist", "index.html")
+  );
+});
+
+// ============================
+// INICIAR SERVIDOR
+// ============================
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Servidor rodando na porta ${PORT}`);
+  console.log(`✅ Servidor rodando em http://localhost:${PORT}`);
 });
