@@ -1,108 +1,96 @@
 const db = require("../config/db");
 
 // ============================
-// CRIAR PRODUTO
+// CRIAR
 // ============================
 exports.criarProduto = async (req, res) => {
   const { nome, preco, estoque } = req.body;
 
   if (!nome || preco == null || estoque == null) {
-    return res.status(400).json({
-      error: "Nome, preço e estoque são obrigatórios"
-    });
+    return res.status(400).json({ error: "Dados obrigatórios: nome, preco, estoque" });
   }
 
   try {
     const [result] = await db.query(
-      "INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)",
+      "INSERT INTO produtos (nome, preco, estoque, ativo) VALUES (?, ?, ?, 1)",
       [nome, preco, estoque]
     );
 
-    res.status(201).json({
-      message: "Produto cadastrado com sucesso",
-      id: result.insertId
-    });
+    res.status(201).json({ message: "Produto criado", id: result.insertId });
   } catch (error) {
-    console.error("Erro ao criar produto:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Erro ao criar:", error);
+    res.status(500).json({ error: "Erro interno ao criar produto" });
   }
 };
 
 // ============================
-// LISTAR PRODUTOS
+// LISTAR (somente ativos)
 // ============================
 exports.listarProdutos = async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM produtos");
+    // Adicione "WHERE ativo = 1" para não trazer produtos desativados
+    const [rows] = await db.query("SELECT * FROM produtos WHERE ativo = 1");
     res.json(rows);
   } catch (error) {
-    console.error("Erro ao listar produtos:", error);
     res.status(500).json({ error: error.message });
   }
 };
-
 // ============================
-// BUSCAR PRODUTO POR ID
+// BUSCAR POR ID (Corrigido com Try/Catch)
 // ============================
 exports.buscarProdutoPorId = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [rows] = await db.query(
-      "SELECT * FROM produtos WHERE id = ?",
-      [id]
-    );
-
+    const [rows] = await db.query("SELECT * FROM produtos WHERE id = ? AND ativo = 1", [id]);
+    
     if (rows.length === 0) {
-      return res.status(404).json({ error: "Produto não encontrado" });
+      return res.status(404).json({ error: "Produto não encontrado ou inativo" });
     }
 
     res.json(rows[0]);
   } catch (error) {
-    console.error("Erro ao buscar produto:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 // ============================
-// ATUALIZAR PRODUTO
+// ATUALIZAR (Melhorado para evitar sobrescrever com nulos)
 // ============================
 exports.atualizarProduto = async (req, res) => {
   const { id } = req.params;
   const { nome, preco, estoque } = req.body;
 
-  if (!nome || preco == null || estoque == null) {
-    return res.status(400).json({
-      error: "Nome, preço e estoque são obrigatórios"
-    });
-  }
-
   try {
-    const [result] = await db.query(
-      "UPDATE produtos SET nome = ?, preco = ?, estoque = ? WHERE id = ?",
-      [nome, preco, estoque, id]
-    );
+    // Primeiro verifica se o produto existe
+    const [atual] = await db.query("SELECT nome, preco, estoque FROM produtos WHERE id = ?", [id]);
+    if (atual.length === 0) return res.status(404).json({ error: "Produto não encontrado" });
 
-    if (result.affectedRows === 0) {
-      return res.status(404).json({ error: "Produto não encontrado" });
-    }
+    // Usa os valores antigos caso os novos não sejam enviados (Coalesce lógica)
+    const novoNome = nome || atual[0].nome;
+    const novoPreco = preco !== undefined ? preco : atual[0].preco;
+    const novoEstoque = estoque !== undefined ? estoque : atual[0].estoque;
+
+    const [result] = await db.query(
+      "UPDATE produtos SET nome=?, preco=?, estoque=? WHERE id=?",
+      [novoNome, novoPreco, novoEstoque, id]
+    );
 
     res.json({ message: "Produto atualizado com sucesso" });
   } catch (error) {
-    console.error("Erro ao atualizar produto:", error);
     res.status(500).json({ error: error.message });
   }
 };
 
 // ============================
-// DELETAR PRODUTO
+// EXCLUIR (SOFT DELETE)
 // ============================
 exports.deletarProduto = async (req, res) => {
   const { id } = req.params;
 
   try {
     const [result] = await db.query(
-      "DELETE FROM produtos WHERE id = ?",
+      "UPDATE produtos SET ativo = 0 WHERE id = ?",
       [id]
     );
 
@@ -110,31 +98,25 @@ exports.deletarProduto = async (req, res) => {
       return res.status(404).json({ error: "Produto não encontrado" });
     }
 
-    res.json({ message: "Produto removido com sucesso" });
+    res.json({ message: "Produto desativado com sucesso" });
   } catch (error) {
-    console.error("Erro ao deletar produto:", error);
+    console.error("Erro ao desativar produto:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 // ============================
-// EXTRATO DE ESTOQUE DO PRODUTO
+// EXTRATO
 // ============================
 exports.extratoEstoque = async (req, res) => {
   const { id } = req.params;
 
   try {
     const [rows] = await db.query(
-      `
-      SELECT
-        m.data_mov,
-        m.tipo,
-        m.quantidade,
-        m.origem,
-        m.origem_id
-      FROM movimentacoes_estoque m
-      WHERE m.produto_id = ?
-      ORDER BY m.data_mov DESC
-      `,
+      `SELECT data_mov, tipo, quantidade, origem, origem_id 
+       FROM movimentacoes_estoque 
+       WHERE produto_id = ? 
+       ORDER BY data_mov DESC`,
       [id]
     );
 

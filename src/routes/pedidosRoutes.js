@@ -1,21 +1,18 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const pedidosController = require("../controllers/pedidosController");
 
-const pedidosController = require('../controllers/pedidosController');
+// globais
+router.put("/cancelar-todos", pedidosController.cancelarTodos);
+router.delete("/limpar-tudo", pedidosController.limparTudo);
 
-console.log('📦 pedidosRoutes.js carregado');
-
-// CREATE
-router.post('/', pedidosController.criarPedido);
-
-// READ
-router.get('/', pedidosController.listarPedidos);
-router.get('/:id', pedidosController.buscarPedidoPorId);
-
-// UPDATE (status)
-router.put('/:id/status', pedidosController.atualizarStatusPedido);
-
-// DELETE
-router.delete('/:id', pedidosController.cancelarPedido);
+// padrão
+router.get("/", pedidosController.listarPedidos);
+router.get("/:id/itens", pedidosController.listarItensPedido);
+router.post("/", pedidosController.criarPedido);
+router.post("/:id/itens", pedidosController.adicionarItemPedido);
+router.delete("/:id/itens/:itemId", pedidosController.removerItemPedido);
+router.put("/:id/confirmar", pedidosController.confirmarPedido);
+router.put("/:id/cancelar", pedidosController.cancelarPedido);
 
 module.exports = router;
