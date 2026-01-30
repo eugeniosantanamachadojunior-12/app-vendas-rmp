@@ -29,8 +29,11 @@ exports.criarProduto = async (req, res) => {
 exports.listarProdutos = async (req, res) => {
   try {
     // Adicione "WHERE ativo = 1" para não trazer produtos desativados
-    const [rows] = await db.query("SELECT * FROM produtos WHERE ativo = 1");
-    res.json(rows);
+    const [rows] = await db.query
+
+("SELECT * FROM produtos WHERE ativo = 1");
+    res.json(rows)
+;
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -42,7 +45,9 @@ exports.buscarProdutoPorId = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [rows] = await db.query("SELECT * FROM produtos WHERE id = ? AND ativo = 1", [id]);
+    const [rows] = await db.query
+
+y("SELECT * FROM produtos WHERE id = ? AND ativo = 1", [id]);
     
     if (rows.length === 0) {
       return res.status(404).json({ error: "Produto não encontrado ou inativo" });
@@ -112,7 +117,9 @@ exports.extratoEstoque = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [rows] = await db.query(
+    const [rows] = await db.query
+
+(
       `SELECT data_mov, tipo, quantidade, origem, origem_id 
        FROM movimentacoes_estoque 
        WHERE produto_id = ? 
@@ -120,7 +127,8 @@ exports.extratoEstoque = async (req, res) => {
       [id]
     );
 
-    res.json(rows);
+   res.json(rows)
+ ;
   } catch (error) {
     console.error("Erro extrato estoque:", error);
     res.status(500).json({ error: error.message });

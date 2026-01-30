@@ -13,22 +13,21 @@ exports.relatorioVendas = async (req, res) => {
   }
 
   try {
-    const [rows] = await db.query(
-  `
-  SELECT
-    DATE(p.data_pedido) AS data,
-    COUNT(p.id) AS total_pedidos,
-    SUM(p.total) AS total_vendido
-  FROM pedidos p
-  WHERE p.status = 'CONFIRMADO'
-    AND DATE(p.data_pedido) BETWEEN ? AND ?
-  GROUP BY DATE(p.data_pedido)
-  ORDER BY data;
-  `,
-  [inicio, fim]
-    );
+    const [rows] = await db.query
+(`
+      SELECT
+        DATE(p.data_pedido) AS data,
+        COUNT(p.id) AS total_pedidos,
+        SUM(p.total) AS total_vendido
+      FROM pedidos p
+      WHERE p.status = 'CONFIRMADO'
+        AND DATE(p.data_pedido) BETWEEN $1 AND $2
+      GROUP BY DATE(p.data_pedido)
+      ORDER BY data;
+    `, [inicio, fim]);
 
-    res.json(rows);
+    res.json(rows)
+;
   } catch (error) {
     console.error("Erro relatório vendas:", error);
     res.status(500).json({ error: error.message });

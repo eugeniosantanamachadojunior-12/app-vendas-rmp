@@ -38,7 +38,9 @@ exports.resumo = async (req, res) => {
 // ============================
 exports.vendasDiarias = async (req, res) => {
   try {
-    const [rows] = await db.query(`
+   const [rows] = await db.query
+ 
+(`
       SELECT
         DATE(data_pedido) AS data,
         SUM(total) AS total_vendido
@@ -48,7 +50,8 @@ exports.vendasDiarias = async (req, res) => {
       ORDER BY data
     `);
 
-    res.json(rows);
+   res.json(rows)
+ ;
   } catch (error) {
     console.error("Erro vendasDiarias:", error);
     res.status(500).json({ error: error.message });
@@ -60,7 +63,9 @@ exports.vendasDiarias = async (req, res) => {
 // ============================
 exports.topProdutos = async (req, res) => {
   try {
-    const [rows] = await db.query(`
+  const [rows] = await db.query
+  
+(`
       SELECT
         pr.nome,
         SUM(ip.quantidade) AS total_vendido
@@ -73,7 +78,7 @@ exports.topProdutos = async (req, res) => {
       LIMIT 5
     `);
 
-    res.json(rows);
+   res.json(rows);
   } catch (error) {
     console.error("Erro topProdutos:", error);
     res.status(500).json({ error: error.message });

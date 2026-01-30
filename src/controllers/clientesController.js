@@ -24,10 +24,13 @@ exports.criarCliente = async (req, res) => {
 // LISTAR CLIENTES
 // ============================
 exports.listar = async (req, res) => {
-  const [rows] = await db.query(
+const [rows] = await db.query
+
+(
     "SELECT id, nome, telefone, email, cpf_cnpj FROM clientes ORDER BY nome"
   );
-  res.json(rows);
+  res.json(rows)
+;
 };
 
 
@@ -38,7 +41,9 @@ exports.buscarClientePorId = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [rows] = await db.query(
+  const [rows] = await db.query
+
+  (
       "SELECT * FROM clientes WHERE id = ?",
       [id]
     );

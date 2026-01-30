@@ -30,7 +30,9 @@ exports.criarPedido = async (req, res) => {
 // LISTAR PEDIDOS
 // ============================
 exports.listarPedidos = async (req, res) => {
-  const [rows] = await db.query(`
+const [rows] = await db.query
+
+  (`
     SELECT 
       p.id,
       p.data_pedido,
@@ -42,7 +44,8 @@ exports.listarPedidos = async (req, res) => {
     ORDER BY p.id DESC
   `);
 
-  res.json(rows);
+  res.json(rows)
+;
 };
 
 // ============================
@@ -51,14 +54,17 @@ exports.listarPedidos = async (req, res) => {
 exports.listarItensPedido = async (req, res) => {
   const { id } = req.params;
 
-  const [rows] = await db.query(`
+  const [rows] = await db.query
+y
+(`
     SELECT ip.id, p.nome, p.preco, ip.quantidade
     FROM itens_pedido ip
     JOIN produtos p ON p.id = ip.produto_id
     WHERE ip.pedido_id = ?
   `, [id]);
 
-  res.json(rows);
+res.json(rows)
+  ;
 };
 
 // ============================
