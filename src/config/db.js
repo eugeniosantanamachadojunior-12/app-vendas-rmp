@@ -1,3 +1,4 @@
+const path = require("path");
 const fs = require("fs");
 const mysql = require("mysql2");
 
@@ -8,7 +9,9 @@ const connection = mysql.createPool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   ssl: {
-    ca: fs.readFileSync("ca.pem")
+    ca: fs.readFileSync(
+      path.join(__dirname, "../../ca.pem")
+    )
   }
 });
 
