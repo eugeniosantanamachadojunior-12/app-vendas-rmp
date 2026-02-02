@@ -13,8 +13,10 @@ export default function Vendas() {
   const [itens, setItens] = useState([]);
 
   useEffect(() => {
-    api.get("/clientes").then(r => setClientes(r.data));
-    api.get("/produtos").then(r => setProdutos(r.data));
+    api.get("/clientes").then(r => setClientes(r.data.rows));
+
+    api.get("/produtos").then(r => setProdutos(r.data.rows));
+
   }, []);
 
   function abrirVenda() {
@@ -35,7 +37,8 @@ api.post("/pedidos", {
   }
 
   function carregarItens() {
-    api.get(`/pedidos/${pedido.id}/itens`).then(r => setItens(r.data));
+    api.get(`/pedidos/${pedido.id}/itens`).then(r => setItens(r.data.rows));
+
   }
 
   function adicionarItem() {
