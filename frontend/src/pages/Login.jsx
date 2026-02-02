@@ -8,25 +8,25 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  async function handleLogin(e) {
-    e.preventDefault();
+async function handleLogin(e) {
+  e.preventDefault();
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const res = await api.post("/auth/login", {
-        email,
-        senha,
-      });
+    const res = await api.post("/api/auth/login", {
+      email,
+      senha,
+    });
 
-      localStorage.setItem("token", res.data.token);
-      navigate("/");
-    } catch (err) {
-      alert(err.response?.data?.error || "Login inválido");
-    } finally {
-      setLoading(false);
-    }
+    localStorage.setItem("token", res.data.token);
+    navigate("/");
+  } catch (err) {
+    alert(err.response?.data?.error || "Login inválido");
+  } finally {
+    setLoading(false);
   }
+}
 
   return (
     <div className="h-screen flex items-center justify-center bg-black">
