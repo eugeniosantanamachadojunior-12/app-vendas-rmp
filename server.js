@@ -1,15 +1,26 @@
 require("dotenv").config();
-// conexão com o banco
-require("./src/config/db");
-
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+
+// conexão com o banco
+require("./src/config/db");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// ============================
+// ROTAS DE TESTE
+// ============================
+app.get("/", (req, res) => {
+  res.send("API ONLINE NO RENDER");
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 
 // ============================
 // IMPORTAR ROTAS
@@ -32,7 +43,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/auth", authRoutes);
 
 // ============================
-// SERVIR FRONTEND (VITE BUILD)
+// SERVIR FRONTEND
 // ============================
 app.use(express.static(path.join(__dirname, "frontend", "dist")));
 
@@ -54,5 +65,5 @@ app.get(/.*/, (req, res) => {
 // ============================
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Servidor rodando em http://localhost:${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
