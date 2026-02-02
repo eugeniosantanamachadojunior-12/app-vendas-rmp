@@ -51,30 +51,21 @@ app.use(express.static(path.join(__dirname, "frontend", "dist")));
 app.get("/api", (req, res) => {
   res.send("API de vendas funcionando!");
 });
+const pool = require("./src/config/db");
+
 app.get("/db-test", async (req, res) => {
   try {
-    const mysql = require("mysql2/promise");
-
-    const conn = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASS,
-      database: process.env.DB_NAME,
-      port: process.env.DB_PORT,
-      ssl: { rejectUnauthorized: true }
-    });
-
-    await conn.query("SELECT 1");
-    res.json({ status: "CONECTADO COM SUCESSO AO AIVEN" });
-
+    const [rows] = await pool.query("SELECT 1");
+    res.json({ status: "OK", rows });
   } catch (err) {
-    res.status(500).json({
+    res.json({
       status: "ERRO",
       error: err.message,
       code: err.code
     });
   }
 });
+
 
 // ============================
 // ROTA CORINGA DO REACT
