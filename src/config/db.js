@@ -10,7 +10,8 @@ const connection = mysql.createPool({
   port: process.env.DB_PORT,
   ssl: {
     ca: fs.readFileSync(path.join(__dirname, "../../ca.pem")),
-    rejectUnauthorized: false
+    rejectUnauthorized: false,
+    checkServerIdentity: () => null
   }
 });
 
