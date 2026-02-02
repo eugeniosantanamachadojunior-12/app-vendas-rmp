@@ -1,3 +1,4 @@
+const fs = require("fs");
 const mysql = require("mysql2");
 
 const connection = mysql.createPool({
@@ -7,7 +8,7 @@ const connection = mysql.createPool({
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
   ssl: {
-    rejectUnauthorized: false
+    ca: fs.readFileSync("ca.pem")
   }
 });
 
