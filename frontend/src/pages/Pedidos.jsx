@@ -6,9 +6,9 @@ export default function Pedidos() {
   const [pedidos, setPedidos] = useState([]);
   const navigate = useNavigate();
 
-  function carregar() {
-    api.get("/pedidos").then(res => setPedidos(res.data));
-  }
+function carregar() {
+  api.get("/pedidos").then(res => setPedidos(res.data.rows));
+}
 
   useEffect(() => {
     carregar();
