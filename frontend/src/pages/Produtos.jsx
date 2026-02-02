@@ -9,7 +9,8 @@ export default function Produtos() {
   const [editandoId, setEditandoId] = useState(null);
 
   function carregar() {
-    api.get("/produtos").then((res) => setProdutos(res.data));
+    api.get("/produtos").then((res) => setProdutos(res.data.rows));
+
   }
 
   useEffect(() => {
