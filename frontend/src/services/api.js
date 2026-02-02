@@ -3,3 +3,12 @@ import axios from "axios";
 export const api = axios.create({
   baseURL: "https://app-vendas-rmp.onrender.com"
 });
+
+// INTERCEPTOR DE TOKEN (OBRIGATÓRIO)
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = "Bearer " + token;
+  }
+  return config;
+});
