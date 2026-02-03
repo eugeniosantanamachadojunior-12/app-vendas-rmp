@@ -7,8 +7,11 @@ export default function Pedidos() {
   const navigate = useNavigate();
 
 function carregar() {
-  api.get("/pedidos").then(res => setPedidos(res.data.rows));
+  api.get("/pedidos").then(res => {
+    setPedidos(res.data.rows || []);
+  });
 }
+
 
   useEffect(() => {
     carregar();

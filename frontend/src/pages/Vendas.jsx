@@ -12,12 +12,10 @@ export default function Vendas() {
   const [pedido, setPedido] = useState(null);
   const [itens, setItens] = useState([]);
 
-  useEffect(() => {
-    api.get("/clientes").then(r => setClientes(r.data.rows));
-
-    api.get("/produtos").then(r => setProdutos(r.data.rows));
-
-  }, []);
+ useEffect(() => {
+  api.get("/clientes").then(r => setClientes(r.data.rows || []));
+  api.get("/produtos").then(r => setProdutos(r.data.rows || []));
+}, []);
 
   function abrirVenda() {
     if (!clienteId) return alert("Selecione um cliente");

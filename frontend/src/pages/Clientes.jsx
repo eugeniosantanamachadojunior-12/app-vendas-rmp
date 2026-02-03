@@ -15,9 +15,12 @@ export default function Clientes() {
   const [historico, setHistorico] = useState([]);
   const [clienteHistorico, setClienteHistorico] = useState(null);
 
-  function carregar() {
-  api.get("/clientes").then(res => setClientes(res.data.rows));
+ function carregar() {
+  api.get("/clientes").then(res => {
+    setClientes(res.data.rows || []);
+  });
 }
+
 
 
   useEffect(() => {
