@@ -1,8 +1,9 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: "https://app-vendas-rmp.onrender.com"
+  baseURL: "https://app-vendas-rmp.onrender.com/api"
 });
+
 
 // INTERCEPTOR DE TOKEN (OBRIGATÓRIO)
 api.interceptors.request.use((config) => {
