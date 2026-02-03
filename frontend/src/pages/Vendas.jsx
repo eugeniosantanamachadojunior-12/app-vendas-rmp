@@ -94,7 +94,10 @@ function removerItem(itemId) {
     });
   }
 
-  const total = itens.reduce((s, i) => s + i.preco * i.quantidade, 0);
+  const total = Array.isArray(itens)
+  ? itens.reduce((s, i) => s + i.preco * i.quantidade, 0)
+  : 0;
+
 
   function statusBadge() {
     if (!pedido) return null;

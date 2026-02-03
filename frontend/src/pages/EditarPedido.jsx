@@ -11,18 +11,26 @@ export default function EditarPedido() {
   const [quantidade, setQuantidade] = useState(1);
 
   useEffect(() => {
-    api.get(`/pedidos/${id}/itens`).then(res => setItens(res.data.rows));
-    api.get("/produtos").then(res => setProdutos(res.data.rows));
-  }, []);
+  api.get(`/pedidos/${id}/itens`).then(res => {
+    setItens(Array.isArray(res.data) ? res.data : []);
+  });
 
-  function adicionar() {
-    api.post(`/pedidos/${id}/itens`, { produto_id: produtoId, quantidade })
-      .then(() => {
-        api.get(`/pedidos/${id}/itens`).then(res => setItens(res.data.rows));
-        setProdutoId("");
-        setQuantidade(1);
+  api.get("/produtos").then(res => {
+    setProdutos(Array.isArray(res.data) ? res.data : []);
+  });
+}, [id]);
+
+function adicionar() {
+  api.post(`/pedidos/${id}/itens`, { produto_id: produtoId, quantidade })
+    .then(() => {
+      api.get(`/pedidos/${id}/itens`).then(res => {
+        setItens(Array.isArray(res.data) ? res.data : []);
       });
-  }
+      setProdutoId("");
+      setQuantidade(1);
+    });
+}
+
 
   function remover(itemId) {
     if (!confirm("Remover este item?")) return;
