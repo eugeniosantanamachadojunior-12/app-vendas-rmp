@@ -54,18 +54,16 @@ const [rows] = await db.query
 exports.listarItensPedido = async (req, res) => {
   const { id } = req.params;
 
-  const [rows] = await db.query
-y
-(`
-    SELECT ip.id, p.nome, p.preco, ip.quantidade
+  const [rows] = await db.query(`
+    SELECT ip.id, p.nome, ip.preco_unit AS preco, ip.quantidade
     FROM itens_pedido ip
     JOIN produtos p ON p.id = ip.produto_id
     WHERE ip.pedido_id = ?
   `, [id]);
 
-res.json(rows)
-  ;
+  res.json(rows);
 };
+
 
 // ============================
 // ADICIONAR ITEM
