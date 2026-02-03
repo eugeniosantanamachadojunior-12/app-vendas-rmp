@@ -11,14 +11,14 @@ export default function EditarPedido() {
   const [quantidade, setQuantidade] = useState(1);
 
   useEffect(() => {
-    api.get(`/pedidos/${id}/itens`).then(res => setItens(res.data));
-    api.get("/produtos").then(res => setProdutos(res.data));
+    api.get(`/pedidos/${id}/itens`).then(res => setItens(res.data.rows));
+    api.get("/produtos").then(res => setProdutos(res.data.rows));
   }, []);
 
   function adicionar() {
     api.post(`/pedidos/${id}/itens`, { produto_id: produtoId, quantidade })
       .then(() => {
-        api.get(`/pedidos/${id}/itens`).then(res => setItens(res.data));
+        api.get(`/pedidos/${id}/itens`).then(res => setItens(res.data.rows));
         setProdutoId("");
         setQuantidade(1);
       });
