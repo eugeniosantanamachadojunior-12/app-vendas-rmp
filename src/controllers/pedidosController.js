@@ -154,6 +154,17 @@ exports.removerItemPedido = async (req, res) => {
     connection.release();
   }
 };
+// ============================
+// EXCLUIR PEDIDO (🔥 NOVO)
+// ============================
+exports.excluirPedido = async (req, res) => {
+  const { id } = req.params;
+
+  await db.query("DELETE FROM itens_pedido WHERE pedido_id = ?", [id]);
+  await db.query("DELETE FROM pedidos WHERE id = ?", [id]);
+
+  res.json({ message: "Pedido excluído" });
+};
 
 // ============================
 // CONFIRMAR PEDIDO

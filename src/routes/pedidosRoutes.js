@@ -15,4 +15,7 @@ router.delete("/:id/itens/:itemId", pedidosController.removerItemPedido);
 router.put("/:id/confirmar", pedidosController.confirmarPedido);
 router.put("/:id/cancelar", pedidosController.cancelarPedido);
 
+// 🔥 ESSA LINHA ESTAVA FALTANDO
+router.delete("/:id", pedidosController.excluirPedido);
+
 module.exports = router;
