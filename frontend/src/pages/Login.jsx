@@ -8,13 +8,13 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-async function handleLogin(e) {
+ async function handleLogin(e) {
   e.preventDefault();
 
   try {
     setLoading(true);
 
-    const res = await api.post("/api/auth/login", {
+    const res = await api.post("/auth/login", {
       email,
       senha,
     });
@@ -27,6 +27,7 @@ async function handleLogin(e) {
     setLoading(false);
   }
 }
+
 
   return (
     <div className="h-screen flex items-center justify-center bg-black">

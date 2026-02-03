@@ -43,6 +43,7 @@ app.use("/api/relatorios", relatoriosRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/auth", authRoutes);
 
+
 // ============================
 // SERVIR FRONTEND
 // ============================

@@ -6,6 +6,7 @@ export const api = axios.create({
 
 
 
+
 // INTERCEPTOR DE TOKEN (OBRIGATÓRIO)
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
