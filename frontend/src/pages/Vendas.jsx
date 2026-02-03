@@ -13,9 +13,10 @@ export default function Vendas() {
   const [itens, setItens] = useState([]);
 
  useEffect(() => {
-  api.get("/clientes").then(r => setClientes(r.data.rows || []));
-  api.get("/produtos").then(r => setProdutos(r.data.rows || []));
+  api.get("/clientes").then(r => setClientes(r.data || []));
+  api.get("/produtos").then(r => setProdutos(r.data || []));
 }, []);
+
 
   function abrirVenda() {
     if (!clienteId) return alert("Selecione um cliente");
@@ -33,12 +34,6 @@ api.post("/pedidos", {
 
 
   }
-
-  function carregarItens() {
-    api.get(`/pedidos/${pedido.id}/itens`).then(r => setItens(r.data.rows));
-
-  }
-
   function adicionarItem() {
     if (!produtoId || quantidade < 1) return;
 
@@ -51,6 +46,12 @@ api.post("/pedidos", {
       setQuantidade(1);
     });
   }
+
+function carregarItens() {
+    api.get(`/pedidos/${pedido.id}/itens`).then(r => setItens(r.data.rows));
+
+  }
+
 
 function removerItem(itemId) {
   if (!pedido) return;
