@@ -10,9 +10,9 @@ export default function Produtos() {
 
   function carregar() {
   api.get("/produtos").then(res => {
-    console.log("PRODUTOS:", res.data);
-    setProdutos(res.data);
-  });
+  console.log("PRODUTOS:", res.data);
+  setProdutos(res.data || []);
+});
 }
 
 

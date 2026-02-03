@@ -16,10 +16,10 @@ export default function Clientes() {
   const [clienteHistorico, setClienteHistorico] = useState(null);
 
 function carregar() {
-  api.get("/clientes").then(res => {
-    console.log("CLIENTES:", res.data); // debug
-    setClientes(res.data);
-  });
+api.get("/clientes").then(res => {
+  console.log("CLIENTES:", res.data);
+  setClientes(res.data || []);
+});
 }
 
 
@@ -30,19 +30,20 @@ function carregar() {
     carregar();
   }, []);
 
-  function salvar(e) {
-    e.preventDefault();
+ function salvar(e) {
+  e.preventDefault();
 
-    const req = editandoId
-      ? api.put(`/clientes/${editandoId}`, form)
-      : api.post("/clientes", form);
+  const req = editandoId
+    ? api.put(`/clientes/${editandoId}`, form)
+    : api.post("/clientes", form);   // 👈 AQUI
 
-    req.then(() => {
-      setForm({ nome: "", telefone: "", email: "", cpf_cnpj: "" });
-      setEditandoId(null);
-      carregar();
-    });
-  }
+  req.then(() => {
+    setForm({ nome: "", telefone: "", email: "", cpf_cnpj: "" });
+    setEditandoId(null);
+    carregar();   // 👈 ESSA LINHA É O QUE FAZ APARECER NA TELA
+  });
+}
+
 
   function editar(c) {
     setForm({
