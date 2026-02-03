@@ -12,6 +12,7 @@ export default function Vendas() {
   const [pedido, setPedido] = useState(null);
   const [itens, setItens] = useState([]);
 
+
  useEffect(() => {
   api.get("/clientes").then(r => setClientes(r.data || []));
   api.get("/produtos").then(r => setProdutos(r.data || []));
@@ -48,9 +49,17 @@ api.post("/pedidos", {
   }
 
 function carregarItens() {
-    api.get(`/pedidos/${pedido.id}/itens`).then(r => setItens(r.data.rows));
+  api.get(`/pedidos/${pedido.id}/itens`)
+    .then(r => {
+      if (Array.isArray(r.data)) {
+        setItens(r.data);
+      } else {
+        setItens([]);
+      }
+    })
+    .catch(() => setItens([]));
+}
 
-  }
 
 
 function removerItem(itemId) {
@@ -126,7 +135,10 @@ function removerItem(itemId) {
           disabled={pedido}
         >
           <option value="">Selecione o cliente</option>
-          {clientes.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
+         {Array.isArray(clientes) && clientes.map(c => (
+  <option key={c.id} value={c.id}>{c.nome}</option>
+))}
+
         </select>
 
         {!pedido && (
@@ -147,7 +159,10 @@ function removerItem(itemId) {
               onChange={e => setProdutoId(e.target.value)}
             >
               <option value="">Selecione o produto</option>
-              {produtos.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+              {Array.isArray(produtos) && produtos.map(p => (
+  <option key={p.id} value={p.id}>{p.nome}</option>
+))}
+
             </select>
 
             <input
@@ -164,7 +179,8 @@ function removerItem(itemId) {
           </div>
 
           <div className="bg-white p-4 mt-6 rounded shadow">
-         {itens.map(i => (
+        {Array.isArray(itens) && itens.map(i => (
+
   <div
     key={i.id}
     className="flex items-center justify-between border-b py-3"
