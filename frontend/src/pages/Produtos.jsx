@@ -10,9 +10,11 @@ export default function Produtos() {
 
   function carregar() {
   api.get("/produtos").then(res => {
-    setProdutos(res.data.rows || []);
+    console.log("PRODUTOS:", res.data);
+    setProdutos(res.data);
   });
 }
+
 
 
   useEffect(() => {
