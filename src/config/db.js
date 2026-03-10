@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   port: process.env.DB_PORT,
-  // ESTA É A CHAVE PARA O SUCESSO:
+  // ESTA LINHA É O QUE RESOLVE O ERRO 500 NA AIVEN:
   ssl: {
     rejectUnauthorized: false
   }
