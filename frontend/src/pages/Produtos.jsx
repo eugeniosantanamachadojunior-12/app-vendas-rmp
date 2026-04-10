@@ -145,42 +145,48 @@ export default function Produtos() {
         </button>
       </div>
 
-      <table className="w-full bg-white shadow">
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Preço</th>
-            <th>Estoque</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody>
-          {produtos.map(p => (
-            <tr key={p.id}>
-              <td>{p.nome}</td>
-              <td>R$ {p.preco}</td>
-              <td>{p.estoque}</td>
-             <td className="p-3 text-center">
-  <div className="flex justify-center gap-4">
-    <button
-      onClick={() => editar(p)}
-      className="text-blue-600 hover:underline"
-    >
-      Editar
-    </button>
+      <table className="w-full bg-white shadow text-center border-collapse table-fixed">
+  <thead className="bg-gray-200">
+    <tr>
+      <th className="p-3 w-1/4">Nome</th>
+      <th className="p-3 w-1/4">Preço</th>
+      <th className="p-3 w-1/4">Estoque</th>
+      <th className="p-3 w-1/4">Ações</th>
+    </tr>
+  </thead>
 
-    <button
-      onClick={() => excluir(p.id)}
-      className="text-red-600 hover:underline"
-    >
-      Excluir
-    </button>
-  </div>
-</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  <tbody>
+    {produtos.map(p => (
+      <tr key={p.id} className="border-t hover:bg-gray-100">
+        <td className="p-3">{p.nome}</td>
+
+        <td className="p-3">
+          R$ {Number(p.preco).toFixed(2)}
+        </td>
+
+        <td className="p-3">{p.estoque}</td>
+
+        <td className="p-3">
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => editar(p)}
+              className="text-blue-600 hover:underline"
+            >
+              Editar
+            </button>
+
+            <button
+              onClick={() => excluir(p.id)}
+              className="text-red-600 hover:underline"
+            >
+              Excluir
+            </button>
+          </div>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
 
       {/* 🚀 IMPORTADOR EM MASSA */}
       <div className="bg-white p-4 mt-6 shadow">
