@@ -160,10 +160,23 @@ export default function Produtos() {
               <td>{p.nome}</td>
               <td>R$ {p.preco}</td>
               <td>{p.estoque}</td>
-              <td>
-                <button onClick={() => editar(p)} className="text-blue-600 mr-4">Editar</button>
-                <button onClick={() => excluir(p.id)} className="text-red-600">Excluir</button>
-              </td>
+             <td className="p-3 text-center">
+  <div className="flex justify-center gap-4">
+    <button
+      onClick={() => editar(p)}
+      className="text-blue-600 hover:underline"
+    >
+      Editar
+    </button>
+
+    <button
+      onClick={() => excluir(p.id)}
+      className="text-red-600 hover:underline"
+    >
+      Excluir
+    </button>
+  </div>
+</td>
             </tr>
           ))}
         </tbody>
