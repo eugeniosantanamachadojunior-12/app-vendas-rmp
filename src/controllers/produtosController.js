@@ -134,3 +134,20 @@ exports.extratoEstoque = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+exports.criarProdutosLote = async (req, res) => {
+  const produtos = req.body;
+
+  try {
+    for (const p of produtos) {
+      await db.execute(
+        'INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)',
+        [p.nome, p.preco, p.estoque]
+      );
+    }
+
+    res.json({ mensagem: 'Produtos inseridos com sucesso' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao inserir produtos' });
+  }
+};

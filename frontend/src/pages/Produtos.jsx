@@ -9,13 +9,11 @@ export default function Produtos() {
   const [editandoId, setEditandoId] = useState(null);
 
   function carregar() {
-  api.get("/produtos").then(res => {
-  console.log("PRODUTOS:", res.data);
-  setProdutos(res.data || []);
-});
-}
-
-
+    api.get("/produtos").then(res => {
+      console.log("PRODUTOS:", res.data);
+      setProdutos(res.data || []);
+    });
+  }
 
   useEffect(() => {
     carregar();
@@ -61,6 +59,79 @@ export default function Produtos() {
     setEstoque("");
   }
 
+  // 🚀 NOVAS FUNÇÕES (IMPORTADOR)
+
+  const adicionarLinha = () => {
+    const tabela = document.getElementById('corpoTabela');
+
+    tabela.innerHTML += `
+      <tr>
+        <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
+        <td contenteditable="true"></td>
+      </tr>
+    `;
+  };
+
+  const salvarProdutosLote = async () => {
+    const linhas = document.querySelectorAll('#corpoTabela tr');
+
+    const produtos = [];
+
+    linhas.forEach(linha => {
+      const colunas = linha.querySelectorAll('td');
+
+      const nome = colunas[0].innerText.trim();
+      const preco = parseFloat(colunas[1].innerText.replace(",", "."));
+      const estoque = parseInt(colunas[2].innerText);
+
+      if (nome) {
+        produtos.push({ nome, preco, estoque });
+      }
+    });
+
+    if (produtos.length === 0) {
+      alert("Nenhum produto válido!");
+      return;
+    }
+
+    await api.post('/produtos/lote', produtos);
+
+    alert('Produtos cadastrados em massa 🚀');
+
+    carregar();
+  };
+
+  // 🔥 COLAR DO EXCEL
+
+  useEffect(() => {
+    const handlePaste = (e) => {
+      const texto = e.clipboardData.getData('text');
+
+      if (texto.includes('\t')) {
+        e.preventDefault();
+
+        const linhas = texto.split('\n');
+        const tabela = document.getElementById('corpoTabela');
+
+        linhas.forEach(linha => {
+          const [nome, preco, estoque] = linha.split('\t');
+
+          tabela.innerHTML += `
+            <tr>
+              <td contenteditable="true">${nome || ''}</td>
+              <td contenteditable="true">${preco || ''}</td>
+              <td contenteditable="true">${estoque || ''}</td>
+            </tr>
+          `;
+        });
+      }
+    };
+
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, []);
+
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">Produtos</h1>
@@ -97,6 +168,39 @@ export default function Produtos() {
           ))}
         </tbody>
       </table>
+
+      {/* 🚀 IMPORTADOR EM MASSA */}
+      <div className="bg-white p-4 mt-6 shadow">
+        <h2 className="text-lg font-bold mb-2">Importação em Massa</h2>
+
+        <table className="w-full border">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Preço</th>
+              <th>Estoque</th>
+            </tr>
+          </thead>
+
+          <tbody id="corpoTabela">
+            <tr>
+              <td contentEditable className="border p-1"></td>
+              <td contentEditable className="border p-1"></td>
+              <td contentEditable className="border p-1"></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div className="mt-2 flex gap-2">
+          <button onClick={adicionarLinha} className="bg-gray-500 text-white px-3">
+            + Linha
+          </button>
+
+          <button onClick={salvarProdutosLote} className="bg-green-600 text-white px-3">
+            Salvar em Massa
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
