@@ -3,23 +3,37 @@ const db = require("../config/db");
 // ============================
 // CRIAR
 // ============================
-exports.criarProduto = async (req, res) => {
-  const { nome, preco, estoque } = req.body;
-
-  if (!nome || preco == null || estoque == null) {
-    return res.status(400).json({ error: "Dados obrigatórios: nome, preco, estoque" });
-  }
-
+exports.criarProdutosLote = async (req, res) => {
   try {
-    const [result] = await db.query(
-      "INSERT INTO produtos (nome, preco, estoque, ativo) VALUES (?, ?, ?, 1)",
-      [nome, preco, estoque]
-    );
+    const produtos = req.body;
 
-    res.status(201).json({ message: "Produto criado", id: result.insertId });
-  } catch (error) {
-    console.error("Erro ao criar:", error);
-    res.status(500).json({ error: "Erro interno ao criar produto" });
+    // valida se é array
+    if (!Array.isArray(produtos)) {
+      return res.status(400).json({ erro: "Formato inválido. Envie um array." });
+    }
+
+    for (const p of produtos) {
+      const nome = p.nome?.trim();
+      const preco = Number(p.preco);
+      const estoque = Number(p.estoque);
+
+      // valida dados
+      if (!nome || isNaN(preco) || isNaN(estoque)) {
+        console.log("Produto inválido ignorado:", p);
+        continue;
+      }
+
+      await db.query(
+        "INSERT INTO produtos (nome, preco, estoque, ativo) VALUES (?, ?, ?, 1)",
+        [nome, preco, estoque]
+      );
+    }
+
+    res.json({ mensagem: "Produtos inseridos com sucesso 🚀" });
+
+  } catch (err) {
+    console.error("ERRO LOTE:", err);
+    res.status(500).json({ erro: err.message });
   }
 };
 
