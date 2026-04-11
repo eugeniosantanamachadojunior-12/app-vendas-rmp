@@ -1,13 +1,12 @@
 const db = require("../config/db");
 
 // ============================
-// CRIAR
+// CRIAR EM LOTE (ÚNICA VERSÃO)
 // ============================
 exports.criarProdutosLote = async (req, res) => {
   try {
     const produtos = req.body;
 
-    // valida se é array
     if (!Array.isArray(produtos)) {
       return res.status(400).json({ erro: "Formato inválido. Envie um array." });
     }
@@ -17,7 +16,6 @@ exports.criarProdutosLote = async (req, res) => {
       const preco = Number(p.preco);
       const estoque = Number(p.estoque);
 
-      // valida dados
       if (!nome || isNaN(preco) || isNaN(estoque)) {
         console.log("Produto inválido ignorado:", p);
         continue;
@@ -38,33 +36,31 @@ exports.criarProdutosLote = async (req, res) => {
 };
 
 // ============================
-// LISTAR (somente ativos)
+// LISTAR
 // ============================
 exports.listarProdutos = async (req, res) => {
   try {
-    // Adicione "WHERE ativo = 1" para não trazer produtos desativados
-    const [rows] = await db.query
-
-("SELECT * FROM produtos WHERE ativo = 1");
-    res.json(rows)
-;
+    const [rows] = await db.query("SELECT * FROM produtos WHERE ativo = 1");
+    res.json(rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 // ============================
-// BUSCAR POR ID (Corrigido com Try/Catch)
+// BUSCAR POR ID
 // ============================
 exports.buscarProdutoPorId = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [rows] = await db.query
+    const [rows] = await db.query(
+      "SELECT * FROM produtos WHERE id = ? AND ativo = 1",
+      [id]
+    );
 
-y("SELECT * FROM produtos WHERE id = ? AND ativo = 1", [id]);
-    
     if (rows.length === 0) {
-      return res.status(404).json({ error: "Produto não encontrado ou inativo" });
+      return res.status(404).json({ error: "Produto não encontrado" });
     }
 
     res.json(rows[0]);
@@ -74,35 +70,40 @@ y("SELECT * FROM produtos WHERE id = ? AND ativo = 1", [id]);
 };
 
 // ============================
-// ATUALIZAR (Melhorado para evitar sobrescrever com nulos)
+// ATUALIZAR
 // ============================
 exports.atualizarProduto = async (req, res) => {
   const { id } = req.params;
   const { nome, preco, estoque } = req.body;
 
   try {
-    // Primeiro verifica se o produto existe
-    const [atual] = await db.query("SELECT nome, preco, estoque FROM produtos WHERE id = ?", [id]);
-    if (atual.length === 0) return res.status(404).json({ error: "Produto não encontrado" });
+    const [atual] = await db.query(
+      "SELECT nome, preco, estoque FROM produtos WHERE id = ?",
+      [id]
+    );
 
-    // Usa os valores antigos caso os novos não sejam enviados (Coalesce lógica)
+    if (atual.length === 0) {
+      return res.status(404).json({ error: "Produto não encontrado" });
+    }
+
     const novoNome = nome || atual[0].nome;
     const novoPreco = preco !== undefined ? preco : atual[0].preco;
     const novoEstoque = estoque !== undefined ? estoque : atual[0].estoque;
 
-    const [result] = await db.query(
+    await db.query(
       "UPDATE produtos SET nome=?, preco=?, estoque=? WHERE id=?",
       [novoNome, novoPreco, novoEstoque, id]
     );
 
     res.json({ message: "Produto atualizado com sucesso" });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
 // ============================
-// EXCLUIR (SOFT DELETE)
+// EXCLUIR
 // ============================
 exports.deletarProduto = async (req, res) => {
   const { id } = req.params;
@@ -118,8 +119,8 @@ exports.deletarProduto = async (req, res) => {
     }
 
     res.json({ message: "Produto desativado com sucesso" });
+
   } catch (error) {
-    console.error("Erro ao desativar produto:", error);
     res.status(500).json({ error: error.message });
   }
 };
@@ -131,9 +132,7 @@ exports.extratoEstoque = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const [rows] = await db.query
-
-(
+    const [rows] = await db.query(
       `SELECT data_mov, tipo, quantidade, origem, origem_id 
        FROM movimentacoes_estoque 
        WHERE produto_id = ? 
@@ -141,27 +140,9 @@ exports.extratoEstoque = async (req, res) => {
       [id]
     );
 
-   res.json(rows)
- ;
+    res.json(rows);
+
   } catch (error) {
-    console.error("Erro extrato estoque:", error);
     res.status(500).json({ error: error.message });
-  }
-};
-exports.criarProdutosLote = async (req, res) => {
-  const produtos = req.body;
-
-  try {
-    for (const p of produtos) {
-      await db.execute(
-        'INSERT INTO produtos (nome, preco, estoque) VALUES (?, ?, ?)',
-        [p.nome, p.preco, p.estoque]
-      );
-    }
-
-    res.json({ mensagem: 'Produtos inseridos com sucesso' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao inserir produtos' });
   }
 };
