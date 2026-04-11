@@ -1,5 +1,23 @@
 const db = require("../config/db");
 
+exports.criarProduto = async (req, res) => {
+  const { nome, preco, estoque } = req.body;
+
+  if (!nome || preco == null || estoque == null) {
+    return res.status(400).json({ error: "Dados obrigatórios" });
+  }
+
+  try {
+    const [result] = await db.query(
+      "INSERT INTO produtos (nome, preco, estoque, ativo) VALUES (?, ?, ?, 1)",
+      [nome, preco, estoque]
+    );
+
+    res.status(201).json({ message: "Produto criado", id: result.insertId });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 // ============================
 // CRIAR EM LOTE (ÚNICA VERSÃO)
 // ============================
