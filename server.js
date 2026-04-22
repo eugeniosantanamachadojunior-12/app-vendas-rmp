@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-
+const mlRoutes = require('./src/routes/mlRoutes');
 // conexão com o banco
 require("./src/config/db");
 
@@ -42,7 +42,7 @@ app.use("/api/pedidos", pedidosRoutes);
 app.use("/api/relatorios", relatoriosRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/auth", authRoutes);
-
+app.use('/api', mlRoutes);
 
 // ============================
 // SERVIR FRONTEND
